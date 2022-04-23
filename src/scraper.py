@@ -8,3 +8,6 @@ class Base:
 
 	def set_html(self, html):
 		self.__make_soup(html)
+
+	def html(self):
+		print(self.soup)

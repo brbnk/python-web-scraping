@@ -3,31 +3,30 @@ from scraper import Base
 import time
 import json 
 
-class NetshoesScraper(Base):
+class NikeScraper(Base):
 	products = []
 
 	def __init__(self, target):
 		self.target = target
 
 	def __get_product_name(self):
-		section = self.soup.find(class_='short-description')
-		h1 = section.find('h1')
-		return h1.get_text()
+		section = self.soup.find(class_='header-pdp-body__detail--desc')
+		return section.get_text()
 
 	def __get_product_price(self):
-		price = self.soup.find(class_='default-price')
+		price = self.soup.find(class_='valor-normal js-valor-normal')
 		return price.get_text()
 
 	def __get_photos(self):
-		ul = self.soup.find(class_='swiper-wrapper')
-		imgs = ul.find_all('img')
+		carrousel = self.soup.find(class_='easyzoom easyzoom--adjacent easyzoom--with-thumbnails row')
+		imgs = carrousel.find_all('a')
 
 		photos = []
 
 		for index, img in enumerate(imgs):
 			photos.append({ 
 				"order": index, 
-				"url": img['data-src-large'] 
+				"url": img['data-standard'] 
 			})
 		
 		return photos
@@ -46,10 +45,11 @@ class NetshoesScraper(Base):
 			response_html = self.target['http_client'].get(
 				path=path, 
 				headers={
-					"User-agent": "Mediapartners-Google"
+					"user-agent": 'insomnia/2022.2.1',
+					"accept": '*/*'
 				}
 			)
-
+			
 			self.set_html(response_html)
 			self.__add_product()
 
